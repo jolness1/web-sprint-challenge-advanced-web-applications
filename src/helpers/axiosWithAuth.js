@@ -1,11 +1,9 @@
 import axios from "axios";
 
-import axios from "axios";
+const axiosWithAuth = () => {
+const token = window.localStorage.getItem("token");
 
-export const axiosWithAuth = () => {
-    const token = window.localStorage.getItem("token");
-
-    return axios.create({
+return axios.create({
         baseURL: "http://localhost:5000/api",
         headers: {
             Authorization: token
@@ -13,7 +11,7 @@ export const axiosWithAuth = () => {
     })
 }
 
-
+export default axiosWithAuth;
 
 
 //Task List:

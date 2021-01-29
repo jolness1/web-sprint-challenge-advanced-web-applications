@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
 import Bubbles from "./Bubbles";
+import axiosFetchColors from './../helpers/axiosFetchColors';
 import ColorList from "./ColorList";
 
 const BubblePage = () => {
   const [colorList, setColorList] = useState([]);
+  
+  const fetchColors = () => {
+    axiosFetchColors()
+    .then((data) => {
+      setColorList(data);
+    })
+    .catch((err) => console.log(err));
+  };
+  useEffect(() => {
+    if (colorList.length === 0) {
+      fetchColors();
+    }
+  },);
 
   return (
     <>

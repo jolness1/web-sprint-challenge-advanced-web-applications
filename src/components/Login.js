@@ -1,17 +1,87 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import * as Yup from 'yup';
+import schema from '../helpers/formSchema'
 
-const Login = () => {
+
+const Login = (props) => {
+  const [ credentials, setCredentials ] = 
+    useState({
+      username:'',
+      password:''
+    });
+  const [formErrors, setFormErrors] = 
+    useState({
+      username: '',
+      password:''
+    })
+
+  const handleChange = (evt, name, value) => {
+    Yup
+      .reach(schema, name)
+      .validate(value)
+      .then(() => {
+        setFormErrors({
+          ...formErrors,
+          [name]: '',
+        })
+      .catch((err) => {
+        setFormErrors({
+          ...formErrors,
+          [name]: err.errors[0]
+        })
+      })
+      })
+    setCredentials({
+      ...credentials,
+      [evt.target.name]: evt.target.value
+    });
+  };
+
+  const handleLogin = (evt) => {
+    evt.preventDefault();
+    axios
+      .post('http://localhost:5000/api/login', credentials)
+      .then((res) => {
+        window.localStorage.setItem('token', res.data.payload);
+        props.history.push("/protected");
+      })
+      .catch((err) => { console.log(err)});
+  }
+
+
+
+
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
 
   return (
-    <>
+    <div>
       <h1>
+      <div>{formErrors.username}</div>
+      <div>{formErrors.password}</div>
         Welcome to the Bubble App!
-        <p>Build a login page here</p>
       </h1>
-    </>
+      <form onSubmit={handleLogin}>
+        <label>Username:
+          <input
+            type="string"
+            name="username"
+            value={credentials.username}
+            onChange={handleChange}
+            />
+        </label>
+        <label>Password:
+          <input
+            type="password"
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
+            />
+        </label>
+        <button>Log In</button>
+      </form>
+    </div>
   );
 };
 
