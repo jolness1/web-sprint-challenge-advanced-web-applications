@@ -25,13 +25,14 @@ const Login = (props) => {
           ...formErrors,
           [name]: '',
         })
-      .catch((err) => {
-        setFormErrors({
-          ...formErrors,
-          [name]: err.errors[0]
+        .catch((err) => {
+          setFormErrors({
+            ...formErrors,
+            [name]: err.errors[0]
+          })
         })
       })
-      })
+      console.log(formErrors);
     setCredentials({
       ...credentials,
       [evt.target.name]: evt.target.value
@@ -58,10 +59,12 @@ const Login = (props) => {
   return (
     <div>
       <h1>
-      <div>{formErrors.username}</div>
-      <div>{formErrors.password}</div>
         Welcome to the Bubble App!
       </h1>
+      <div className="errors">
+        <div>{formErrors.password}</div>
+        <div>{formErrors.username}</div>
+      </div>
       <form onSubmit={handleLogin}>
         <label>Username:
           <input

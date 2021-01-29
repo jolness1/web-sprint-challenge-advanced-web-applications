@@ -10,7 +10,7 @@ const initialColor = {
 const ColorList = ({ colors, updateColors, fetchColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
-  
+ 
   
   
   const editColor = color => {
@@ -18,31 +18,41 @@ const ColorList = ({ colors, updateColors, fetchColors }) => {
     setColorToEdit(color);
   };
 
-  const saveEdit = e => {
+  const saveEdit = (e) => {
     e.preventDefault();
-    const id = colorToEdit.id;
     axiosWithAuth()
-    .put(`/colors/${id}`, colorToEdit)
-    .then((res) => {
-      if (res.statusText === "OK"){
-        setColorToEdit(initialColor);
+      .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then((res) => {
+        console.log(res.data.id);
+
+        const newState = colors.map(color => {
+          if(color.id === res.data.id){
+            return colorToEdit
+          } else {
+            return color
+          }
+        })
+        updateColors(newState)
         setEditing(false);
-        fetchColors();
-      }
-    });
+      })
+      .catch((err) => console.log(err));
   };
 
-  const deleteColor = color => {
-    const id = colorToEdit.id;
+  const deleteColor = (color) => {
+    console.log(color.id);
     axiosWithAuth()
-      .delete(`/colors/${id}`)
+      .delete(`http://localhost:5000/api/colors/${color.id}`)
       .then((res) => {
-        console.log(res);
-        if (res.request.status === "202") {
-          fetchColors();
-        }
+        const filteredArr = colors.filter(
+          (color) => Number(color.id) !== Number(res.data)
+        );
+        updateColors(filteredArr);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
+
 
   return (
     <div className="colors-wrap">
